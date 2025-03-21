@@ -3,19 +3,19 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# Carregar a planilha
+
 df = pd.read_excel('TESTE-EMAIL-AUTOMATICO-RV.xlsx', sheet_name='Página1')
 
-# Configurações do e-mail
-smtp_server = 'smtp.gmail.com'
-smtp_port = 587  # Porta para TLS
-smtp_user = 'dados@fortsunbrasil.com'
-smtp_password = 'xxii smwn jwhx vcsj'
 
-# Função para enviar e-mail
+smtp_server = 'smtp.gmail.com'
+smtp_port = 587  
+smtp_user = 'dados@fortsunbrasil.com'
+smtp_password = 'xxyx xyxx yxxx xxxx'
+
+
 def send_email(to_email, subject, body):
     try:
-        # Configuração da mensagem
+        
         msg = MIMEMultipart()
         msg['From'] = smtp_user
         msg['To'] = to_email
@@ -38,7 +38,7 @@ def send_email(to_email, subject, body):
     except smtplib.SMTPException as e:
         print(f'Erro ao enviar e-mail para {to_email}: {e}')
 
-# Iterar sobre as linhas da planilha
+
 for index, row in df.iterrows():
     to_email = row['E-mail FAST PE \n Parceira Estratégica']
     cust_id = row['Cust Id FAST']
@@ -65,8 +65,10 @@ for index, row in df.iterrows():
     Supervisão: {supervisao}
 
     Atenciosamente,
-    Equipe de RH
+    Equipe de Dados da Fortsun
+    dados@fortsunbrasil.com
+    ...
     """
 
-    # Enviar o e-mail
+
     send_email(to_email, subject, body)
