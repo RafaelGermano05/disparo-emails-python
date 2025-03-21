@@ -7,16 +7,16 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import os
 
-# Carregar a planilha
+
 df = pd.read_excel('TESTE-EMAIL-AUTOMATICO-RV.xlsx', sheet_name='Página1')
 
-# Configurações do e-mail
+
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
 smtp_user = 'dados@fortsunbrasil.com'
-smtp_password = 'xxii smwn jwhx vcsj'  # Use a senha de aplicativo aqui
+smtp_password = 'xxx xxx xxx xxx'  
 
-# Função para criar o PDF com os dados do colaborador
+#saga do pdf
 def criar_pdf(nome, cust_id, status, cargo, admissao, cpf, supervisao):
     pdf_filename = f"{nome.replace(' ', '_')}_dados.pdf"
     c = canvas.Canvas(pdf_filename, pagesize=A4)
@@ -35,7 +35,7 @@ def criar_pdf(nome, cust_id, status, cargo, admissao, cpf, supervisao):
     c.save()
     return pdf_filename
 
-# Função para enviar o e-mail
+
 def send_email(to_email, subject, body, pdf_filename):
     try:
         msg = MIMEMultipart()
@@ -43,21 +43,21 @@ def send_email(to_email, subject, body, pdf_filename):
         msg['To'] = to_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
-
-        # Anexar o arquivo PDF
+#testes
+       
         with open(pdf_filename, "rb") as f:
             part = MIMEApplication(f.read(), _subtype="pdf")
             part.add_header('Content-Disposition', f'attachment; filename="{pdf_filename}"')
             msg.attach(part)
 
-        # Conectar ao servidor SMTP com TLS
+      
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
             server.login(smtp_user, smtp_password)
             server.sendmail(smtp_user, to_email, msg.as_string())
             print(f'E-mail enviado com sucesso para {to_email}')
 
-        # Remover o arquivo PDF após o envio
+        #testando, tentar remover os arquivos gerados para email
         os.remove(pdf_filename)
 
     except smtplib.SMTPAuthenticationError:
@@ -69,7 +69,7 @@ def send_email(to_email, subject, body, pdf_filename):
     except smtplib.SMTPException as e:
         print(f'Erro ao enviar e-mail para {to_email}: {e}')
 
-# Iterar sobre as linhas da planilha
+
 for index, row in df.iterrows():
     to_email = row['E-mail FAST PE \n Parceira Estratégica']
     cust_id = row['Cust Id FAST']
@@ -80,10 +80,10 @@ for index, row in df.iterrows():
     cpf = row['CPF']
     supervisao = row['Supervisão']
 
-    # Criar o arquivo PDF
+
     pdf_filename = criar_pdf(nome, cust_id, status, cargo, admissao, cpf, supervisao)
 
-    # Criar o corpo do e-mail
+   
     subject = f'Dados do Consultor - {nome}'
     body = f"""
     Olá {nome},
@@ -96,5 +96,5 @@ for index, row in df.iterrows():
     ...
     """
 
-    # Enviar o e-mail com o anexo PDF
+
     send_email(to_email, subject, body, pdf_filename)
