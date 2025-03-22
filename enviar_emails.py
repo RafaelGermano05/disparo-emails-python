@@ -6,15 +6,54 @@ from email.mime.application import MIMEApplication
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import os
+import pywhatkit
+import time
+import pyautogui
 
+#Aqui eu começo o script de disparo de mensagens para o whatsapp
 
 df = pd.read_excel('TESTE-EMAIL-AUTOMATICO-RV.xlsx', sheet_name='Página1')
 
+def send_whatsapp_message(phone_number, message):
+    try:
+        # Envio da mensagem
+        pywhatkit.sendwhatmsg_instantly(f"+55{phone_number}", message)
+        print(f"Mensagem enviada para {phone_number}")
+        
+        # Intervalo para não dar erro no envio das mensagens
+        time.sleep(8)
+
+        #Para economizar memória fechando as abas
+        pyautogui.hotkey('ctrl', 'w')
+
+    except Exception as e:
+        print(f"Erro ao enviar mensagem para {phone_number}: {e}")
+for index, row in df.iterrows():
+    phone_number = row['Telefone']  
+    nome = row['Nome']
+    cargo = row['Cargo']
+    
+
+    # A mensagem personalizada
+    message = f"""
+    Olá {nome}, tudo bem?
+
+    Aqui é da Fortsun! Gostaríamos de informar que estamos atualizando os seus dados no sistema.
+    Caso precise de suporte ou mais informações, entre em contato com a nossa equipe.
+
+    Cargo: {cargo}
+
+    Atenciosamente,
+    Equipe de Dados da Fortsun
+    """
+
+    # Enviar a mensagem no WhatsApp
+    send_whatsapp_message(phone_number, message)
 
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
 smtp_user = 'dados@fortsunbrasil.com'
-smtp_password = 'xxx xxx xxx xxx'  
+smtp_password = 'xxxx xxxx xxxx xxxx'  
 
 #saga do pdf
 def criar_pdf(nome, cust_id, status, cargo, admissao, cpf, supervisao):
@@ -43,8 +82,8 @@ def send_email(to_email, subject, body, pdf_filename):
         msg['To'] = to_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
-#testes
-       
+
+#testes       
         with open(pdf_filename, "rb") as f:
             part = MIMEApplication(f.read(), _subtype="pdf")
             part.add_header('Content-Disposition', f'attachment; filename="{pdf_filename}"')
